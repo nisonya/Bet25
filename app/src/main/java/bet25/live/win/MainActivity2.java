@@ -46,6 +46,7 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
         //проверка сохранена ли ссылка
         url_SP = getSharedPrefStr();
         if(url_SP=="") {
@@ -174,29 +175,13 @@ public class MainActivity2 extends AppCompatActivity {
     }
     //вызыв зваглушки
     public void plug(){
-        binding = ActivityMain2Binding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
 
-        /*binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment fragment = new StopwatchFragment();;
-            switch (item.getItemId()) {
-                case R.id.stopwatch:
-                    fragment = new StopwatchFragment();
-                    break;
-                case R.id.new_training:
-                    fragment = new NewTrainingFragment();
-                    break;
-                case R.id.history:
-                    fragment = new HistoryFragment();
-                    break;
-            }
+            Fragment fragment = new ExerciseFragment();;
+
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragmentCV, fragment);
             fragmentTransaction.commit();
-
-            return true;
-        });*/
     }
     //сохранение ссылки локально
     public void saveToSP(){
