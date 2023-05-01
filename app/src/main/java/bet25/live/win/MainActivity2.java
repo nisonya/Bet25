@@ -26,7 +26,6 @@ import android.widget.Spinner;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.chip.Chip;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
@@ -47,8 +46,6 @@ public class MainActivity2 extends AppCompatActivity {
 
 
 
-    ActivityMain2Binding binding;
-    RecyclerView musclesList, exersiseList;
     private static final String FILE_NAME="MY_FILE_NAME";
     private static final String URL_STRING="URL_STRING";
     String url_FB;
@@ -263,4 +260,6 @@ public class MainActivity2 extends AppCompatActivity {
 
         cursor.close();
     }
+
+
 }
