@@ -16,12 +16,18 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExersiseViewHolder>{
+
+    interface OnExClickListener{
+        void onExClickLis(Exercise exerciseItem);
+    }
     private List<Exercise> mExersise;
     private static int viewHolderCount;
+    private final OnExClickListener onClickListener;
     private int numberItems;
-    public ExerciseAdapter(List<Exercise> exersises){
+    public ExerciseAdapter(List<Exercise> exersises, OnExClickListener onClickListener){
         mExersise =exersises;
         viewHolderCount = 0;
+        this.onClickListener = onClickListener;
     }
     @NonNull
     @Override
@@ -56,6 +62,14 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exersi
                 .with(holder.itemView.getContext())
                 .load(String.valueOf(exersiseItem.getPhoto()))
                 .into(holder.photo);
+        holder.btnstart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //int positionIndex = getAbsoluteAdapterPosition();
+                onClickListener.onExClickLis(exersiseItem);
+            }
+        });
+
     }
 
     @Override
@@ -67,12 +81,14 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exersi
 
         TextView name, minutes;
         ImageView photo;
+        Button btnstart;
 
         public ExersiseViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tv_name);
             minutes = itemView.findViewById(R.id.tv_min);
             photo = itemView.findViewById(R.id.iv_photo);
+            btnstart = itemView.findViewById(R.id.btn_start);
         }
         void bind(int listIndex){
         }
