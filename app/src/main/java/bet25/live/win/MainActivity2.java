@@ -2,27 +2,39 @@ package bet25.live.win;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -44,10 +56,16 @@ public class MainActivity2 extends AppCompatActivity {
     String[] name_muscle= {"Shoulders","Traps", "Quads", "Hamstrings", "Calves", "Chest",
             "Triceps", "Obliques", "Biceps", "Traps (mid-back)", "Lower back","Lats","ALL"};
 
-
+    public static EditText edMin, edSec;
+    public CountDownTimer myTimer;
+    public ConstraintLayout cl;
+    public int i;
+    ProgressBar pb;
+    Button btnend;
 
     private static final String FILE_NAME="MY_FILE_NAME";
     private static final String URL_STRING="URL_STRING";
+    public Bundle savedInst;
     String url_FB;
     String url_SP;
     SQLiteDatabase database;
@@ -60,6 +78,7 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        savedInst = savedInstanceState;
         //проверка сохранена ли ссылка
         url_SP = getSharedPrefStr();
         if(url_SP=="") {
@@ -204,9 +223,49 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onExClickLis( Exercise exercise) {
                 System.out.println("CLICKK");
-                Intent intent = new Intent(MainActivity2.this, Timer.class);
+                /*Intent intent = new Intent(MainActivity2.this, Timer.class);
                 intent.putExtra("key", exercise.getTime_level());
-                startActivity(intent);
+                startActivity(intent);*/
+
+                Dialog dialog = new Dialog(MainActivity2.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.timer_dialog);
+                dialog.setCancelable(false);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.show();
+                Button btnend= (Button) dialog.findViewById(R.id.endBTN1);
+                pb = dialog.findViewById(R.id.circularProgressIndicator);
+                pb.setVisibility(View.VISIBLE);
+                edMin = dialog.findViewById(R.id.editTextMinuts);
+                edSec = dialog.findViewById(R.id.editTextSeconds);
+
+                int sec =0;
+                int min =0;
+                for (int j=0;j<exercise.getTime_level();j++){
+                    if(sec==0) sec=30;
+                    else {
+                        sec=0;
+                        min=+1;
+                    }
+                }
+                Long seconds = ((long)min*60)+(long)sec;
+                System.out.println(seconds+"!!!!!!!");
+                int prog = seconds.intValue();
+                pb.setVisibility(View.VISIBLE);
+                //pb.setProgress(1);
+                pb.setMax(prog);
+                //setProgressValue(1,prog);
+                timerCountDown(seconds);
+                edMin.setEnabled(false);
+                edSec.setEnabled(false);
+
+                btnend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myTimer.cancel();
+                        dialog.dismiss();
+                    }
+                });
 
             }
         };
@@ -262,4 +321,64 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
 
+
+    public void goToSett(View view) {
+        System.out.println("###############");
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_layout);
+        dialog.setCancelable(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+        TextView text_dialog = (TextView) dialog.findViewById(R.id.dialog_remainder);
+        Button btn_easy= (Button) dialog.findViewById(R.id.easy);
+        btn_easy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                dialog.dismiss();
+            }
+        });
+        Button btn_ave= (Button) dialog.findViewById(R.id.average);
+        btn_ave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                dialog.dismiss();
+            }
+        });
+        Button btn_hard= (Button) dialog.findViewById(R.id.hard);
+        btn_hard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                dialog.dismiss();
+            }
+        });
+        /*FragmentManager manager = getSupportFragmentManager();
+        MyDialogFragment myDialogFragment = new MyDialogFragment();
+        myDialogFragment.show(manager, "myDialog");*/
+    }
+
+    public void timerCountDown(Long time){
+        myTimer = new CountDownTimer(time*1000, 1000) {
+            @Override
+            public void onTick(long l) {
+                int now = (int) l/1000;
+                pb.setProgress(now);
+                Long min = (l / 60000);
+                Long sec = ((l % 60000) / 1000);
+                edMin.setText(Long.toString(min));
+                edSec.setText(Long.toString(sec));
+            }
+
+            @Override
+            public void onFinish() {
+                finish();
+                //открытие диалогового окн
+
+            }
+        };
+        myTimer.start();
+    }
 }
